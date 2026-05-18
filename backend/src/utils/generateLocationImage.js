@@ -8,7 +8,7 @@
 
 import QRCode from "qrcode";
 
-export const generateLocationQR = async (coordinates) => {
+export const generateLocationImage = async (coordinates) => {
   if (!coordinates?.lat || !coordinates?.lng) return null;
 
   const { lat, lng } = coordinates;
@@ -24,3 +24,5 @@ export const generateLocationQR = async (coordinates) => {
     locationUrl,
   };
 };
+
+
