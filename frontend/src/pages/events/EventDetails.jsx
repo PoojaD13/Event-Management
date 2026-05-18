@@ -1527,6 +1527,7 @@ export default function EventDetails() {
       try {
         setLoading(true);
         const res = await getEventById(eventId);
+        console.log(res);
         if (res?.success && res?.data) {
           setEvent(res.data);
         }
@@ -1729,6 +1730,19 @@ export default function EventDetails() {
     document.body.removeChild(downloadLink);
   };
 
+  const handleLocImageDownload = () => {
+    if (!event?.locImage) return;
+
+    const downloadLink = document.createElement("a");
+    downloadLink.href = event.locImage;
+
+    downloadLink.download = `LOC-${event.title?.replace(/\s+/g, "-") || "Event"}.png`;
+
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-100">
@@ -1800,29 +1814,52 @@ export default function EventDetails() {
                 )}
               </div>
             </div>
-
-            <div className="mt-6 flex flex-col items-center justify-center">
-              {event.qrCode ? (
-                <div className="space-y-4 w-full flex flex-col items-center">
-                  <div className="border border-slate-200 rounded-2xl p-3 bg-slate-50 shadow-xs">
-                    <img
-                      src={event.qrCode}
-                      alt="Event QR"
-                      className="w-44 h-44 object-contain rounded-lg bg-white"
-                    />
+            <div className=" bg-amber-50 flex flex-row gap-4 justify-center">
+              <div className="mt-6 flex flex-col items-center justify-center">
+                {event.qrCode ? (
+                  <div className="space-y-4 w-full flex flex-col items-center">
+                    <div className="border border-slate-200 rounded-2xl p-3 bg-slate-50 shadow-xs">
+                      <img
+                        src={event.qrCode}
+                        alt="Event QR"
+                        className="w-44 h-44 object-contain rounded-lg bg-white"
+                      />
+                    </div>
+                    <button
+                      onClick={handleDownload}
+                      className="bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold px-5 py-2.5 rounded-xl transition"
+                    >
+                      📥 Download Ticket QR
+                    </button>
                   </div>
-                  <button
-                    onClick={handleDownload}
-                    className="bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold px-5 py-2.5 rounded-xl transition"
-                  >
-                    📥 Download Ticket QR
-                  </button>
-                </div>
-              ) : (
-                <p className="text-xs text-slate-500 font-mono">
-                  No QR code available
-                </p>
-              )}
+                ) : (
+                  <p className="text-xs text-slate-500 font-mono">
+                    No QR code available
+                  </p>
+                )}
+              </div>
+              <div>
+                {event.locImage && (
+                  <div className="mt-6 flex flex-col items-center justify-center">
+                    <div className="space-y-4 w-full flex flex-col items-center">
+                      <div className="border border-slate-200 rounded-2xl p-3 bg-slate-50 shadow-xs">
+                        <img
+                          src={event.locImage}
+                          alt="Event Location"
+                          className="w-44 h-44 object-cover rounded-lg bg-white"
+                        />
+                      </div>
+
+                      <button
+                        onClick={handleLocImageDownload}
+                        className="bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold px-5 py-2.5 rounded-xl transition"
+                      >
+                        📍 Download Location Image
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 

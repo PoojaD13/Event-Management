@@ -7,12 +7,17 @@ import {
   getMyEventServices,
 } from "../services/event.service.js";
 
+import redisClient from "../config/redis.js";
+
 /**
  * CREATE EVENT
  */
 export const createEvent = async (req, res) => {
   try {
     const event = await createEventService(req.body);
+    // 🔥 FIX CACHE HERE
+    const keys = await redisClient.keys("events:list*");
+    await Promise.all(keys.map((k) => redisClient.del(k)));
 
     res.status(201).json({
       success: true,
@@ -70,6 +75,7 @@ export const getSingleEvent = async (req, res) => {
     const cacheKey = `events:single:${req.params.id}`;
 
     const event = await getSingleEventService(req.params.id, cacheKey);
+    console.log(event);
 
     res.json({
       success: true,
@@ -89,6 +95,18 @@ export const getSingleEvent = async (req, res) => {
 export const updateEvent = async (req, res) => {
   try {
     const event = await updateEventService(req.params.id, req.body);
+
+    // 🔥 1. Clear all event list caches
+    const listKeys = await redisClient.keys("events:list*");
+    await Promise.all(listKeys.map((key) => redisClient.del(key)));
+
+    // 🔥 2. Clear single event cache
+    const singleKey = `event_:${JSON.stringify({
+      query: {},
+      params: { id: req.params.id },
+    })}`;
+
+    await redisClient.del(singleKey);
 
     res.json({
       success: true,

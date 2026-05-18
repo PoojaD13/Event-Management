@@ -96,7 +96,9 @@ router.post(
 /**
  * GET ALL EVENTS (cached)
  */
-router.get("/", cache("events:list"), getEvents);
+router.get("/", 
+  // cache("events:list"),
+   getEvents);
 
 router.get(
   "/organizer/my",
@@ -108,7 +110,9 @@ router.get(
 /**
  * GET SINGLE EVENT (cached optional)
  */
-router.get("/:id", cache("event_"), getSingleEvent);
+router.get("/:id", 
+  // cache("event_"), 
+  getSingleEvent);
 
 /**
  * UPDATE EVENT

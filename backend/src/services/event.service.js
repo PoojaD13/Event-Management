@@ -32,9 +32,9 @@ export const createEventService = async (payload) => {
   // 3. ✅ FIX: Assign the actual payload key 'qrImage' instead of 'token'
   event.qrCode = qr.qrImage;
 
-  const locImage = generateLocationImage(event.coordinates);
+  const locImage = await  generateLocationImage(event.coordinates);
 
-  event.locImage = locImage;
+  event.locImage = locImage?.qrImage;
 
   // 4. Save the updated instance document containing the payload
   await event.save();

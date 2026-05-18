@@ -1,4 +1,3 @@
-
 import redisClient from "../config/redis.js";
 
 const cache = (keyPrefix, ttl = 300) => {
