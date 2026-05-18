@@ -75,7 +75,7 @@ export const getSingleEvent = async (req, res) => {
     const cacheKey = `events:single:${req.params.id}`;
 
     const event = await getSingleEventService(req.params.id, cacheKey);
-    console.log(event);
+    
 
     res.json({
       success: true,

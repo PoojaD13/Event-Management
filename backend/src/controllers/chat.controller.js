@@ -10,7 +10,6 @@ import {
 export const getChatHistory = async (req, res) => {
   try {
     const { eventId } = req.params;
-    console.log('eventId', eventId)
 
     const messages = await getChatHistoryService(eventId);
 
