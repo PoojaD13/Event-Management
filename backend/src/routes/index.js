@@ -9,6 +9,8 @@ import attendanceRoutes from "./attendance.routes.js";
 import otpRoutes from "./otp.routes.js";
 
 import dashboardRoutes from "./dashboard.routes.js";
+import participantRoute from "./participant.routes.js";
+import volunteerRoutes from "./volunteer.routes.js";
 
 const router = express.Router();
 
@@ -24,5 +26,9 @@ router.use("/otp", otpRoutes);
 router.use("/attendance", attendanceRoutes);
 
 router.use("/dashboard", dashboardRoutes);
+// router.use("/participant", participantRoute);
+
+router.use("/volunteers", volunteerRoutes);
+router.use("/participant", participantRoute);
 
 export default router;
