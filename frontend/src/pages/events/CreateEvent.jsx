@@ -457,7 +457,7 @@ export default function CreateEvent() {
                   : "Commit and Publish"}
             </button>
           </div>
-          Socket.IO Chat System module layout
+          {/* //Socket.IO Chat System module layout */}
         </form>
       </div>
     </div>
