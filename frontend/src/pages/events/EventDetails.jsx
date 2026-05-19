@@ -2109,6 +2109,9 @@ export default function EventDetails() {
   const chatRef = useRef(null);
   const announcementRef = useRef(null);
 
+  const [registering, setRegistering] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
+
   // const [activeTab, setActiveTab] = useState("details"); // chat | announcements
   // 🔄 LIFECYCLE HOOK 1: CORE INITIAL DATA SYNC (Triggers automatically on mount and page refreshes)
   useEffect(() => {
@@ -2181,6 +2184,26 @@ export default function EventDetails() {
     loadEventData();
     fetchAnnouncementHistory();
     fetchChatHistory();
+  }, [eventId]);
+  // check for the register validation from the backend
+  useEffect(() => {
+    const checkRegistration = async () => {
+      try {
+        const res = await api.get(`/participants/${eventId}`);
+
+        const list = res?.data?.data || [];
+
+        const userExists = list.some(
+          (p) => String(p.userId?._id || p.userId) === String(currentUserId),
+        );
+
+        setIsRegistered(userExists);
+      } catch (err) {
+        console.log("Registration check failed");
+      }
+    };
+
+    checkRegistration();
   }, [eventId]);
 
   // 🔌 LIFECYCLE HOOK 2: STANDALONE ACTIVE REAL-TIME SOCKET GATEWAY PIPELINE LISTENER
@@ -2335,6 +2358,24 @@ export default function EventDetails() {
     document.body.removeChild(downloadLink);
   };
 
+  const handleRegister = async () => {
+    try {
+      setRegistering(true);
+
+      const res = await api.post("/participant/register", {
+        eventId,
+      });
+
+      toast.success(res.data.message || "Registered successfully");
+
+      setIsRegistered(true);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Registration failed");
+    } finally {
+      setRegistering(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-100">
@@ -2421,6 +2462,25 @@ export default function EventDetails() {
         >
           <FiArrowLeft /> Return to Event Catalog
         </button>
+
+        {/** register button for the event  */}
+        <div className="mt-4">
+          <button
+            onClick={handleRegister}
+            disabled={registering || isRegistered}
+            className={`px-5 py-2 rounded-xl text-xs font-bold transition ${
+              isRegistered
+                ? "bg-green-500 text-white"
+                : "bg-blue-600 hover:bg-blue-700 text-white"
+            }`}
+          >
+            {isRegistered
+              ? "Registered ✔"
+              : registering
+                ? "Registering..."
+                : "Register Now"}
+          </button>
+        </div>
 
         {/* TWO-COLUMN SPLIT LAYER RESPONSIVE GRID LAYOUT PANEL */}
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
