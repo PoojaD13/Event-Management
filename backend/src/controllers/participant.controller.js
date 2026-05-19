@@ -1,5 +1,6 @@
 import Participant from "../models/participant.model.js";
 import Event from "../models/Event.js";
+import sendEmail from "../utils/sendEmail.js";
 
 // REGISTER USER FOR EVENT
 export const registerParticipant = async (req, res) => {
@@ -29,6 +30,28 @@ export const registerParticipant = async (req, res) => {
       userId,
     });
 
+    await sendEmail({
+      to: participant.email,
+
+      subject: `Registration Confirmed - ${event.title}`,
+
+      html: `
+    <h2>Hello ${participant.name}</h2>
+
+    <p>Your registration has been confirmed.</p>
+
+    <h3>Event Details</h3>
+
+    <p><strong>Event:</strong> ${event.title}</p>
+    <p><strong>Date:</strong> ${event.date}</p>
+    <p><strong>Location:</strong> ${event.location}</p>
+
+    <br/>
+
+    <p>See you at the event 🚀</p>
+  `,
+    });
+
     return res.status(201).json({
       success: true,
       message: "Registered successfully",
@@ -47,10 +70,10 @@ export const registerParticipant = async (req, res) => {
 export const getParticipantsByEvent = async (req, res) => {
   try {
     const { eventId } = req.params;
-    const userId  = req.user.id;
+    const userId = req.user.id;
 
     const eventInfo = await Event.findById(eventId).populate("organizer");
-    console.log(eventInfo.organizer._id , userId)
+    console.log(eventInfo.organizer._id, userId);
     if (String(eventInfo.organizer._id) !== String(userId)) {
       return res.status(400).json({
         success: false,
