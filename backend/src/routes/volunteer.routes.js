@@ -7,9 +7,17 @@ import {
   getVolunteersByEvent,
 } from "../controllers/volunteer.controller.js";
 
-// POST /api/volunteers
-router.post("/", createVolunteer);
+import authMiddleware from "../middlewares/auth.middleware.js";
+import authorizeRoles from "../middlewares/role.middleware.js";
 
-router.get("/event/:eventId", getVolunteersByEvent);
+// POST /api/volunteers
+router.post("/", authMiddleware, authorizeRoles("organizer"), createVolunteer);
+
+router.get(
+  "/event/:eventId",
+  authMiddleware,
+  authorizeRoles("organizer"),
+  getVolunteersByEvent,
+);
 
 export default router;
