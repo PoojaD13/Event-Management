@@ -50,6 +50,7 @@ import EventDetails from "../pages/events/EventDetails";
 import EventScanner from "../pages/events/EventScanner";
 import DashboardLayout from "../layouts/DashboardLayout"; // 👈 Ensure your Layout is explicitly imported
 import ProtectedRoute from "./ProtectedRoute";
+import OrganizerPanel from "../components/event/OrganizerPanel";
 
 export default function AppRoutes() {
   return (
@@ -74,6 +75,7 @@ export default function AppRoutes() {
         <Route element={<DashboardLayout />}>
           <Route path="/events/create" element={<CreateEvent />} />
           <Route path="/events/edit/:id" element={<CreateEvent />} />
+           <Route path="/events/:id/manage" element={<OrganizerPanel />} /> {/* for the organizer operations  */}
         </Route>
       </Route>
 

@@ -2111,6 +2111,7 @@ export default function EventDetails() {
 
   const [registering, setRegistering] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
+  // const [showOrganizerPanel, setShowOrganizerPanel] = useState(false);
 
   // const [activeTab, setActiveTab] = useState("details"); // chat | announcements
   // 🔄 LIFECYCLE HOOK 1: CORE INITIAL DATA SYNC (Triggers automatically on mount and page refreshes)
@@ -2453,7 +2454,16 @@ export default function EventDetails() {
         >
           Announcements
         </button>
+         {isAuthorizedManager && (
+        <button
+          onClick={() => navigate(`/events/${eventId}/manage`)}
+          className="px-4 py-2 rounded-xl text-xs font-bold bg-purple-600 text-white"
+        >
+          Event Management
+        </button>
+      )}
       </div>
+     
       <div className="min-h-screen bg-slate-100 p-4 md:p-6 space-y-4 font-sans text-slate-800 antialiased">
         {/* HEADER NAVIGATION INTERFACE STRIP */}
         <button
