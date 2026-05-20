@@ -23,3 +23,12 @@ export const getMe = async () => {
   const res = await api.get("/auth/me");
   return res.data;
 };
+
+// ✅ Add this function for OTP verification
+export const verifyOtp = async ({ email, otp }) => {
+  const response = await api.post(`auth/verify-otp`, {
+    email,
+    otp,
+  });
+  return response.data.data;
+};
