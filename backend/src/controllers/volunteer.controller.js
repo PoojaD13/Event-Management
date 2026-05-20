@@ -2,6 +2,7 @@ import Volunteer from "../models/Volunteer.js";
 import Event from "../models/Event.js";
 import sendEmail from "../utils/sendEmail.js";
 // import { env } from "../config/env.js";
+import { emailQueue } from "../queue/queue/emailQueue.js";
 
 export const createVolunteer = async (req, res) => {
   try {
@@ -47,7 +48,8 @@ export const createVolunteer = async (req, res) => {
       event: eventId,
     });
 
-    await sendEmail({
+    //workers to send the email
+    await emailQueue.add("send-volunteer-email", {
       to: email,
 
       subject: `Volunteer Registration - ${eventExists.title}`,
@@ -63,19 +65,43 @@ export const createVolunteer = async (req, res) => {
 
     <p><strong>Event:</strong> ${eventExists.title}</p>
     <p><strong>Date:</strong> ${eventExists.date}</p>
-    <p><strong>Location:</strong> ${eventExists.location}</p>
+    <p><strong>Location:</strong> ${eventExists.locImage}</p>
 
     <br/>
 
     <p>Thank you for volunteering ❤️</p>
   `,
     });
-    console.log("sent successfully");
-    return res.status(201).json({
-      success: true,
-      message: "Volunteer created successfully",
-      data: volunteer,
-    });
+
+    //   await sendEmail({
+    //     to: email,
+
+    //     subject: `Volunteer Registration - ${eventExists.title}`,
+
+    //     html: `
+    //   <h2>Hello ${name},</h2>
+
+    //   <p>You have been added as a volunteer for the event.</p>
+
+    //   <hr/>
+
+    //   <h3>Event Details</h3>
+
+    //   <p><strong>Event:</strong> ${eventExists.title}</p>
+    //   <p><strong>Date:</strong> ${eventExists.date}</p>
+    //   <p><strong>Location:</strong> ${eventExists.location}</p>
+
+    //   <br/>
+
+    //   <p>Thank you for volunteering ❤️</p>
+    // `,
+    //   });
+    //   console.log("sent successfully");
+    //   return res.status(201).json({
+    //     success: true,
+    //     message: "Volunteer created successfully",
+    //     data: volunteer,
+    //   });
   } catch (error) {
     console.error(error);
 

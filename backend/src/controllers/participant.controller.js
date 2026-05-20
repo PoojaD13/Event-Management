@@ -1,6 +1,8 @@
 import Participant from "../models/participant.model.js";
 import Event from "../models/Event.js";
-import sendEmail from "../utils/sendEmail.js";
+import User from "../models/User.js"
+// import sendEmail from "../utils/sendEmail.js";
+import { emailQueue } from "../queue/queue/emailQueue.js";
 
 // REGISTER USER FOR EVENT
 export const registerParticipant = async (req, res) => {
@@ -25,32 +27,66 @@ export const registerParticipant = async (req, res) => {
       });
     }
 
+    const event = await Event.findById(eventId);
+
+    if (!event) {
+      res.status(500).json({
+        success: false,
+        message: "Event not found",
+        error: error.message,
+      });
+    }
     const participant = await Participant.create({
       eventId,
       userId,
     });
 
-    await sendEmail({
-      to: participant.email,
+    const user = await User.findById(userId);
+
+    //workers to send the email
+    await emailQueue.add("send-registration-email", {
+      to: user.email,
 
       subject: `Registration Confirmed - ${event.title}`,
 
       html: `
-    <h2>Hello ${participant.name}</h2>
+      <h2>Hello ${participant.name}</h2>
 
-    <p>Your registration has been confirmed.</p>
+      <p>Your registration has been confirmed.</p>
 
-    <h3>Event Details</h3>
+      <h3>Event Details</h3>
 
-    <p><strong>Event:</strong> ${event.title}</p>
-    <p><strong>Date:</strong> ${event.date}</p>
-    <p><strong>Location:</strong> ${event.location}</p>
+      <p><strong>Event:</strong> ${event.title}</p>
+      <p><strong>Date:</strong> ${event.date}</p>
+      <p><strong>Location:</strong> ${event.locImage}</p>
 
-    <br/>
+      <br/>
 
-    <p>See you at the event 🚀</p>
-  `,
+      <p>See you at the event 🚀</p>
+    `,
     });
+
+    //   await sendEmail({
+    //     to: participant.email,
+
+    //     subject: `Registration Confirmed - ${event.title}`,
+
+    //     html: `
+    //   <h2>Hello ${participant.name}</h2>
+
+    //   <p>Your registration has been confirmed.</p>
+
+    //   <h3>Event Details</h3>
+
+    //   <p><strong>Event:</strong> ${event.title}</p>
+    //   <p><strong>Date:</strong> ${event.date}</p>
+    //   <p><strong>Location:</strong> ${event.location}</p>
+
+    //   <br/>
+
+    //   <p>See you at the event 🚀</p>
+    // `,
+    //   });
 
     return res.status(201).json({
       success: true,
