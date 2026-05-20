@@ -160,7 +160,7 @@ export const registerUserService = async ({ email, name, password, role }) => {
   await otp.save();
 
   // // Send OTP email
-  // await sendOtpEmail(normalizedEmail, otpCode);
+  await sendOtpEmail(normalizedEmail, otpCode);
 
   return {
     userId: user._id,
@@ -174,7 +174,6 @@ export const registerUserService = async ({ email, name, password, role }) => {
  * Verifies OTP, updates user's isVerified status, generates tokens
  */
 export const verifyOtpService = async ({ email, otp }) => {
-  console.log(email,otp);
   if (!email || !otp) throw new Error("Email and OTP are required");
 
   const normalizedEmail = email.toLowerCase().trim();
