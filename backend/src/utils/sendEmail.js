@@ -9,15 +9,24 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendEmail = async ({ to, subject, html }) => {
-  // console.log("email is in process");
+// const sendEmail = async ({ to, subject, html }) => {
+//   // console.log("email is in process");
+//   await transporter.sendMail({
+//     from: `"Event Team" <${process.env.EMAIL_USER}>`,
+//     to,
+//     subject,
+//     html,
+//   });
+//   // console.log("send event");
+// };
+const sendEmail = async ({ to, subject, html, attachments = [] }) => {
   await transporter.sendMail({
-    from: `"Event Team" <${process.env.EMAIL_USER}>`,
+    from: `"Event Team" <${env.EMAIL_USER}>`,
     to,
     subject,
     html,
+    attachments,
   });
-  // console.log("send event");
 };
 
 export default sendEmail;

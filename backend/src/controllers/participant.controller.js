@@ -1,6 +1,6 @@
 import Participant from "../models/participant.model.js";
 import Event from "../models/Event.js";
-import User from "../models/User.js"
+import User from "../models/User.js";
 // import sendEmail from "../utils/sendEmail.js";
 import { emailQueue } from "../queue/queue/emailQueue.js";
 
@@ -44,26 +44,82 @@ export const registerParticipant = async (req, res) => {
     const user = await User.findById(userId);
 
     //workers to send the email
+    // await emailQueue.add("send-registration-email", {
+    //   to: user.email,
+
+    //   subject: `Registration Confirmed - ${event.title}`,
+
+    //   html: `
+    //   <h2>Hello ${participant.name}</h2>
+
+    //   <p>Your registration has been confirmed.</p>
+
+    //   <h3>Event Details</h3>
+
+    //   <p><strong>Event:</strong> ${event.title}</p>
+    //   <p><strong>Date:</strong> ${event.date}</p>
+    //   <p><strong>Location:</strong> ${event.locImage}</p>
+
+    //   <br/>
+
+    //   <p>See you at the event 🚀</p>
+    // `,
+    // });
+
+    const base64Image = event.locImage
+      ? event.locImage.split("base64,")[1]
+      : null;
+
+    const base64Qr = event.qrCode ? event.qrCode.split("base64,")[1] : null;
+
     await emailQueue.add("send-registration-email", {
       to: user.email,
-
       subject: `Registration Confirmed - ${event.title}`,
-
       html: `
-      <h2>Hello ${participant.name}</h2>
+    <h2>Hello ${user.name}</h2>
 
-      <p>Your registration has been confirmed.</p>
+    <p>Your registration has been confirmed.</p>
 
-      <h3>Event Details</h3>
+    <h3>Event Details</h3>
 
-      <p><strong>Event:</strong> ${event.title}</p>
-      <p><strong>Date:</strong> ${event.date}</p>
-      <p><strong>Location:</strong> ${event.locImage}</p>
+    <p><strong>Event:</strong> ${event.title}</p>
+    <p><strong>Date:</strong> ${event.date}</p>
 
-      <br/>
+    <p><strong>Location Image:</strong></p>
+    <img src="cid:locationImage" />
 
-      <p>See you at the event 🚀</p>
-    `,
+    <br/>
+
+    <p>See you at the event 🚀</p>
+  `,
+      // attachments: base64Image
+      //   ? [
+      //       {
+      //         filename: "location.png",
+      //         content: base64Image,
+      //         encoding: "base64",
+      //         cid: "locationImage",
+      //       },
+      //     ]
+      //   : [],
+      attachments: [
+        base64Image
+          ? {
+              filename: "location.png",
+              content: base64Image,
+              encoding: "base64",
+              cid: "locationImage",
+            }
+          : null,
+        base64Qr
+          ? {
+              filename: "eventQR.png",
+              content: base64Qr,
+              encoding: "base64",
+              cid: "eventQR",
+            }
+          : null,
+      ].filter(Boolean),
     });
 
     //   await sendEmail({

@@ -48,7 +48,39 @@ export const createVolunteer = async (req, res) => {
       event: eventId,
     });
 
-    //workers to send the email
+    const base64Image = eventExists.locImage
+      ? eventExists.locImage.split("base64,")[1]
+      : null;
+
+    const base64Qr = eventExists.qrCode ? eventExists.qrCode.split("base64,")[1] : null;
+
+  //   //workers to send the email
+  //   await emailQueue.add("send-volunteer-email", {
+  //     to: email,
+
+  //     subject: `Volunteer Registration - ${eventExists.title}`,
+
+  //     html: `
+  //   <h2>Hello ${name},</h2>
+
+  //   <p>You have been added as a volunteer for the event.</p>
+
+  //   <hr/>
+
+  //   <h3>Event Details</h3>
+
+  //   <p><strong>Event:</strong> ${eventExists.title}</p>
+  //   <p><strong>Date:</strong> ${eventExists.date}</p>
+  //    <p><strong>Location:</strong> ${eventExists.locImage}</p>
+
+
+  //   <br/>
+
+  //   <p>Thank you for volunteering ❤️</p>
+  // `,
+  //   });
+
+      //workers to send the email
     await emailQueue.add("send-volunteer-email", {
       to: email,
 
@@ -65,12 +97,32 @@ export const createVolunteer = async (req, res) => {
 
     <p><strong>Event:</strong> ${eventExists.title}</p>
     <p><strong>Date:</strong> ${eventExists.date}</p>
-    <p><strong>Location:</strong> ${eventExists.locImage}</p>
+    <p><strong>Location Image:</strong></p>
+    <img src="cid:locationImage" />
+
 
     <br/>
 
     <p>Thank you for volunteering ❤️</p>
   `,
+        attachments: [
+        base64Image
+          ? {
+              filename: "location.png",
+              content: base64Image,
+              encoding: "base64",
+              cid: "locationImage",
+            }
+          : null,
+        base64Qr
+          ? {
+              filename: "eventQR.png",
+              content: base64Qr,
+              encoding: "base64",
+              cid: "eventQR",
+            }
+          : null,
+      ].filter(Boolean),
     });
 
     //   await sendEmail({
